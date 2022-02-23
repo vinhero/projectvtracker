@@ -1,13 +1,13 @@
 {
-    "name": "ProjectV-Tracker",
-    "description": "It shows the ranks of all participating playiners in a Match.",
-    "version": "0.1",
-    "manifest_version": 3,
-    "background": {
-        "service_worker": "background.js"
-      },
-    "permissions": ["storage"],
-    "action": {
-        "default_popup": "popup.html"
-      }
+  "manifest_version": 3,  
+  "name": "ProjectV-Tracker",
+  "version": "0.1",
+  "description": "It shows the ranks of all participating players in a Match.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "activeTab", "scripting"],
+  "browser_action": {
+    "default_popup": "popup.html"
   }
+}
