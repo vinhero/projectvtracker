@@ -33,11 +33,9 @@ function getPlayerRank(){
 
 function getAllRanks() {
     const arrHtmlPlayer = document.getElementsByClassName('match-overview__member-gameaccount');
-    chrome.storage.sync.get('arrPlayers', (arrRetrived) => {
-        arrRetrived = {};
-        for (let index = 0; arrHtmlPlayer.length > index; index++){
-            arrRetrived[index] = arrHtmlPlayer[index].textContent;
-        }
-        chrome.storage.sync.set({arrPlayers: arrRetrived});
-    });
+    let arrPlayerNames = {};
+    for (let index = 0; arrHtmlPlayer.length > index; index++){
+        arrPlayerNames[index] = arrHtmlPlayer[index].textContent;
+    }
+    chrome.storage.sync.set({arrPlayers: arrPlayerNames});
 }
