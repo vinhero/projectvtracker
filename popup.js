@@ -2,7 +2,7 @@
 // --------------- Variablen --------------- //
 // --------------- --------- --------------- //
 
-let m_btnGetRanks = document.getElementById("btnGetRanks");
+var m_btnGetRanks = document.getElementById("btnGetRanks");
 
 
 // --------------- ------ --------------- //
@@ -24,33 +24,20 @@ m_btnGetRanks.addEventListener("click", async () => {
 // --------------- ---------- --------------- //
 
 function buildPlayerURL(playerid, playertag){
-    return playerurl = apiurl + playerid + '/' +playertag + params; 
+    return playerurl = strApiUrl + playerid + '/' +playertag + strParameters; 
 }
 
-function getPlayerRank(player){
-    var playerid = null;
-    var playertag = null;
-    var playersite = chrome.runtime.getURL(buildPlayerURL(playerid, playertag));
+function getPlayerRank(){
+    console.log('hi');
 }
 
 function getAllRanks() {
-    const arrHtmlPlayer = document.getElementsByClassName('match-overview__member');
-    var m_arrPlayer = [];
-    for (const player of arrHtmlPlayer){
-        
-        m_arrPlayer.push(new Matchplayer());
-    }
-    console.log(m_arrPlayer);
-    
-}
-
-
-
-
-class Matchplayer {
-    constructor(playername, playerrank, playerrr) {
-        this.playername = playername;
-        this.playerrank = playerrank;
-        this.playerrr = playerrr;
-    }
+    const arrHtmlPlayer = document.getElementsByClassName('match-overview__member-gameaccount');
+    chrome.storage.sync.get('arrPlayers', (arrRetrived) => {
+        arrRetrived = {};
+        for (let index = 0; arrHtmlPlayer.length > index; index++){
+            arrRetrived[index] = arrHtmlPlayer[index].textContent;
+        }
+        chrome.storage.sync.set({arrPlayers: arrRetrived});
+    });
 }
