@@ -17,6 +17,19 @@ function getAllRanks() {
         arrPlayerIDs.forEach(strPlayerID => {
             buildPlayerURL(strPlayerID);
         });
+
+        chrome.storage.sync.get(['arrPlayerURLs'], (arrData) => {
+            arrData.arrPlayerURLs.forEach(strPlayerURL => {
+                let strSideText = null;
+                fetch(strPlayerURL, {
+                    mode: 'no-cors'
+                }).then((data) => {
+                    data = strSideText;
+                });
+                console.log(strSideText);
+            });
+        });
+
     }
 
     function buildPlayerURL(strPlayerID){        
