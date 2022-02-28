@@ -9,20 +9,17 @@ m_btnGetRanks.addEventListener("click", async () => {
     });
 });
 
-function getAllRanks() {
-    
+async function getAllRanks() {
+    //const ValorantAPI = require("valorant-api.js")
+
     // -------------------------- Variables -------------------------- //
     const arrHtmlPlayer = document.getElementsByClassName('match-overview__member-gameaccount');
+    const strApiUrl = 'https://api.henrikdev.xyz/valorant/v1/mmr/eu/';
     
     let arrPlayerRIDs = [];
-    // let strApiUrl = 'https://api.kyroskoh.xyz/valorant/v1/mmr/eu/';
-    // let strParameters = '?show=rr&rank&display=0'
-
-    let strApiUrl = 'https://api.kyroskoh.xyz/valorant/v1/mmr/eu/';
-    let strParameters = '?show=rr&rank&display=0'
     
 
-    // -------------------------- Functions -------------------------- //
+    // -------------------------- Functions -------------------------- //    
     function getRiotID (strUnshortened) {
         let strShortened = null;
         strShortened = strUnshortened.replace(/[\r\n]/gm, '');
@@ -31,22 +28,25 @@ function getAllRanks() {
         return strShortened;
     }
     
-    function getPlayerRanks(arrPlayerIDs){
-        let arrPlayerURLs = [];
-        arrPlayerIDs.forEach(strPlayerID => {
-            arrPlayerURLs = buildPlayerURL(strPlayerID, arrPlayerURLs);
+    async function getPlayerRanks(arrPlayerIDs){
+        let arrPlayerRanks = []; 
+        arrPlayerIDs.forEach(async (strPlayerID) => {
+            strPlayerURL = buildPlayerURL(strPlayerID);
             
-            let strSideText = null;
-            fetch(arrPlayerURLs[arrPlayerURLs.length-1], {
-                mode: 'cors'
-            }).then((data) => {
-                data = strSideText;
-                console.log(data);
+            await fetch(strPlayerURL)
+            .then((data) => data.json())
+            .then((jsonData) => {
+                arrPlayerRanks[arrPlayerRanks.length] = { 
+                                                            playername: jsonData['data']['name'], 
+                                                            playerelo: jsonData['data']['elo'],
+                                                            playerrank: jsonData['data']['currenttierpatched']
+                                                        }
             });            
         });
+        return arrPlayerRanks;
     }
 
-    function buildPlayerURL(strPlayerID, arrPlayerURLs){        
+    function buildPlayerURL(strPlayerID){        
         let nIndexHashtag = strPlayerID.indexOf('#');
         let strPlayerName = '';
         let strPlayerTag = '';
@@ -62,8 +62,12 @@ function getAllRanks() {
             }
             else {/** Do not add the character anywhere. */}
         }
-        arrPlayerURLs[arrPlayerURLs.length] = (strApiUrl + strPlayerName + '/' + strPlayerTag + strParameters).replaceAll(' ', '%20');
-        return arrPlayerURLs;
+        strPlayerName = strPlayerName.trimStart();
+        strPlayerName = strPlayerName.trimEnd();
+        strPlayerTag = strPlayerTag.trimStart();
+        strPlayerTag = strPlayerTag.trimEnd();
+
+        return (strApiUrl + strPlayerName + '/' + strPlayerTag).replaceAll(' ', '%20');
     }
 
     // -------------------------- Start -------------------------- //
@@ -72,8 +76,6 @@ function getAllRanks() {
     {
         let strRiotID = getRiotID(arrHtmlPlayer[index].textContent);
         arrPlayerRIDs[index] = strRiotID;
-        
-        //console.log(strRiotID);
     }
-    getPlayerRanks(arrPlayerRIDs);
+    let ranks = await getPlayerRanks(arrPlayerRIDs);
 }
