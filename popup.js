@@ -10,10 +10,9 @@ m_btnGetRanks.addEventListener("click", async () => {
 });
 
 async function getAllRanks() {
-    //const ValorantAPI = require("valorant-api.js")
 
     // -------------------------- Variables -------------------------- //
-    const arrHtmlPlayer = document.getElementsByClassName('match-overview__member-gameaccount');
+    const arrHtmlPlayers = document.getElementsByClassName('match-overview__member-gameaccount');
     const arrTeamStatus = document.getElementsByClassName('match-overview__encounter-ready match-overview__encounter-ready--is-ready');
     const strApiUrl = 'https://api.henrikdev.xyz/valorant/v1/mmr/eu/';
     
@@ -43,10 +42,8 @@ async function getAllRanks() {
         'Radiant': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Valorant-Rank-1-150x150.png',
     }
 
-    let arrPlayerRIDs = [];
-    let arrFullPlayer = [];
-
-    let arrTeamElo = { leftTeam: null, rightTeam: null };
+    let dictAllPlayers = {};
+    let dictTeamElo = { leftTeam: 0, rightTeam: 0 };
     
     
     // -------------------------- Functions -------------------------- //    
@@ -58,59 +55,51 @@ async function getAllRanks() {
         return strShortened;
     }
     
-    async function getPlayerRanks(arrPlayerIDs){
-        let arrPlayerRanks = [];
-        let nIndex = 0;
-        arrPlayerIDs.forEach(async (strPlayerID) => {
-            strPlayerURL = buildPlayerURL(strPlayerID);
+    async function getPlayerRanks(){
+        let leftPlayer = 1;
+        let rightPlayer = 1;
+        for (var key in dictAllPlayers){
             
-            await fetch(strPlayerURL)
+            await fetch(buildPlayerURL(dictAllPlayers[key]['RiotID']))
+            
+            // Konvert to JSON
             .then((data) => data.json())
+
+            // Add missing Infos
             .then((jsonData) => {
-                arrPlayerRanks[arrPlayerRanks.length] = {
-                                                            playername: strPlayerID, 
-                                                            playerelo: jsonData['data']['elo'],
-                                                            playerrank: jsonData['data']['currenttierpatched']
-                                                        };
-                for (let nIndex = 0; nIndex < arrFullPlayer.length; nIndex++) {
-                    if (arrFullPlayer[nIndex]['RiotID'] == strPlayerID)
-                    {
-                        arrFullPlayer[nIndex]['elo'] = jsonData['data']['elo'];
-                        arrFullPlayer[nIndex]['rank'] = jsonData['data']['currenttierpatched'];
-                        let strIMG = '<div class="match-overview__member-rank"><img src="' + dictRankIMG[arrPlayerRanks[arrPlayerRanks.length-1]['playerrank']] +'" height="40" width="40"></div>';
-                        let strInnerHTML = document.getElementsByClassName('match-overview__member')[nIndex].innerHTML;
-                        if(nIndex < 5)
-                        {
-                            document.getElementsByClassName('match-overview__member')[nIndex].innerHTML += strIMG;
-                        }
-                        else 
-                        {
-                            document.getElementsByClassName('match-overview__member')[nIndex].innerHTML = strIMG + strInnerHTML;
-                        }
-                    }
-                    else {}
-                    
-                }
-                console.log(arrFullPlayer);
-                                                        
+                dictAllPlayers[key]['elo'] = jsonData['data']['elo'];
+                dictAllPlayers[key]['rank'] = jsonData['data']['currenttierpatched'];
             })
+
+            // Add Ranks to HTML
             .then(() => {
-                // let strIMG = '<div class="match-overview__member-rank"><img src="' + dictRankIMG[arrPlayerRanks[arrPlayerRanks.length-1]['playerrank']] +'" height="40" width="40"></div>';
-                // let strInnerHTML = document.getElementsByClassName('match-overview__member')[nIndex].innerHTML;
-                // if(nIndex < 5)
-                // {
-                //     document.getElementsByClassName('match-overview__member')[nIndex].innerHTML += strIMG;
-                // }
-                // else 
-                // {
-                //     document.getElementsByClassName('match-overview__member')[nIndex].innerHTML = strIMG + strInnerHTML;
-                // }
-                // nIndex += 1;                          
-            });   
-            console.log('hi');         
-        });
-        console.log('fertig');
-        return arrPlayerRanks;
+                for (let nHtmlPlayerIndex = 0; nHtmlPlayerIndex < arrHtmlPlayers.length; nHtmlPlayerIndex++) {                 
+                    
+                    if (arrHtmlPlayers[nHtmlPlayerIndex].textContent.includes(dictAllPlayers[key]['RiotID'])){
+                        
+                        let strIMG = '<div class="match-overview__member-rank"><img src="' + dictRankIMG[dictAllPlayers[key]['rank']] +'" height="40" width="40"></div>';
+                        let strInnerHTML = document.getElementsByClassName('match-overview__member')[nHtmlPlayerIndex].innerHTML;
+                        
+                        if (dictAllPlayers[key]['team'] === 'left')
+                        {
+                            document.getElementsByClassName('match-overview__member')[nHtmlPlayerIndex].innerHTML += strIMG;
+                            dictTeamElo['leftTeam'] += dictAllPlayers[key]['elo'];
+                            dictTeamElo['leftTeam'] /= leftPlayer;
+                            leftPlayer++;
+                        }
+                        else if (dictAllPlayers[key]['team'] === 'right')
+                        {
+                            document.getElementsByClassName('match-overview__member')[nHtmlPlayerIndex].innerHTML = strIMG + strInnerHTML;
+                            dictTeamElo['rightTeam'] += dictAllPlayers[key]['elo'];
+                            dictTeamElo['leftTeam'] /= rightPlayer;
+                            rightPlayer++;
+                        }
+                        else { /** Team status undefined */}
+                    }
+                    else { /** Not the right Player */}
+                }
+            });
+        }
     }
 
     function buildPlayerURL(strPlayerID){        
@@ -133,56 +122,30 @@ async function getAllRanks() {
         return (strApiUrl + strPlayerName + '/' + strPlayerTag).replaceAll(' ', '%20');
     }
 
-    function getTeamElo(strTeam){
-        if (strTeam === 'left')
-        {
-
-        }
-        else if (strTeam === 'right')
-        {
-
-        }
-        else {/** Team not defined */}
+    function getTeamElos(){
+        
     }
 
     // -------------------------- Start -------------------------- //
     if (arrTeamStatus.length === 2)
     {
-        console.log('start');
-        // creates all RiotIDs from the MatchSide
-        for (let index = 0; arrHtmlPlayer.length > index; index++) 
+        for (let index = 0; arrHtmlPlayers.length > index; index++) 
         {
-            let strTeam = null;
-            arrFullPlayer[arrFullPlayer.length] = 
-            {
-                'html': arrHtmlPlayer[index],
-            };
-            let strRiotID = getRiotID(arrHtmlPlayer[index].textContent);
-            arrFullPlayer[arrFullPlayer.length-1]['RiotID'] = strRiotID;
+            let strRiotID = getRiotID(arrHtmlPlayers[index].textContent);
+            dictAllPlayers[strRiotID] = { "RiotID": strRiotID };
+            
+            // Add Team to Player
             if (index < 5)
             {
-                strTeam = 'left';
+                dictAllPlayers[strRiotID]['team'] = 'left';
             }
             else 
             {
-                strTeam = 'right';
+                dictAllPlayers[strRiotID]['team'] = 'right';
             }
-            arrFullPlayer[arrFullPlayer.length-1]['team'] = strTeam;
-            
-            arrPlayerRIDs[index] = strRiotID;
         }
-        let ranks = await getPlayerRanks(arrPlayerRIDs);
-        console.log(ranks['0']);
-        console.log(ranks.length);
-        for (let nIndex = 0; nIndex < ranks.length; nIndex++) {
-            const element = ranks[nIndex];
-            document.getElementsByClassName('match-overview__member')[nIndex].innerHTML += '<div class="match-overview__member-rank"><img src="https://cdna.artstation.com/p/assets/images/images/032/901/292/large/jared-tod-ranka.jpg?1607811047" height="40" width="40"></div>';
-            console.log('go');            
-        }
-            
-
-        arrTeamElo['leftTeam'] = getTeamElo('left');
-        arrTeamElo['rightTeam'] = getTeamElo('right');
+        await getPlayerRanks();            
+        getTeamElos();
     } 
     else { /** Not all Teams are ready, therefore no Ranks can be displayed. */}
 }
