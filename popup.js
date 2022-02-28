@@ -16,30 +16,31 @@ async function getAllRanks() {
     const arrTeamStatus = document.getElementsByClassName('match-overview__encounter-ready match-overview__encounter-ready--is-ready');
     const strApiUrl = 'https://api.henrikdev.xyz/valorant/v1/mmr/eu/';
     
+    // https://img.rankedboost.com/wp-content/uploads/2020/04/Iron-1-Valorant-Rank-150x150.png
     const dictRankIMG = 
     {
-        'Iron 1': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Iron-1-Valorant-Rank-150x150.png',
-        'Iron 2': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Iron-2-Valorant-Rank-150x150.png',
-        'Iron 3': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Iron-3-Valorant-Rank-150x150.png',
-        'Bronze 1': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Bronze-1-Valorant-Rank-150x150.png',
-        'Bronze 2': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Bronze-2-Valorant-Rank-150x150.png',
-        'Bronze 3': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Bronze-3-Valorant-Rank-150x150.png',
-        'Silver 1': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Silver-1-Valorant-Rank-150x150.png',
-        'Silver 2': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Silver-2-Valorant-Rank-150x150.png',
-        'Silver 3': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Silver-3-Valorant-Rank-150x150.png',
-        'Gold 1': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Gold-1-Valorant-Rank-150x150.png',
-        'Gold 2': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Gold-2-Valorant-Rank-150x150.png',
-        'Gold 3': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Gold-3-Valorant-Rank-150x150.png',
-        'Platin 1': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Platin-1-Valorant-Rank-150x150.png',
-        'Platin 2': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Platin-2-Valorant-Rank-150x150.png',
-        'Platin 3': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Platin-3-Valorant-Rank-150x150.png',
-        'Diamond 1': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Diamond-1-Valorant-Rank-150x150.png',
-        'Diamond 2': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Diamond-2-Valorant-Rank-150x150.png',
-        'Diamond 3': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Diamond-3-Valorant-Rank-150x150.png',
-        'Immortal 1': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Immortal-1-Valorant-Rank-150x150.png',
-        'Immortal 2': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Immortal-2-Valorant-Rank-150x150.png',
-        'Immortal 3': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Immortal-3-Valorant-Rank-150x150.png',
-        'Radiant': 'https://img.rankedboost.com/wp-content/uploads/2020/04/Valorant-Rank-1-150x150.png',
+        'Iron 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/3.png',
+        'Iron 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/4.png',
+        'Iron 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/5.png',
+        'Bronze 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/6.png',
+        'Bronze 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/7.png',
+        'Bronze 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/8.png',
+        'Silver 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/9.png',
+        'Silver 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/10.png',
+        'Silver 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/11.png',
+        'Gold 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/12.png',
+        'Gold 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/13.png',
+        'Gold 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/14.png',
+        'Platin 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/15.png',
+        'Platin 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/16.png',
+        'Platin 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/17.png',
+        'Diamond 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/18.png',
+        'Diamond 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/19.png',
+        'Diamond 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/20.png',
+        'Immortal 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/21.png',
+        'Immortal 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/22.png',
+        'Immortal 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/23.png',
+        'Radiant': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/24.png',
     }
 
     let dictAllPlayers = {};
@@ -168,6 +169,7 @@ async function getAllRanks() {
         }
         await getPlayerRanks();            
         getTeamElos();
+        console.log(dictAllPlayers);
     } 
     else { /** Not all Teams are ready, therefore no Ranks can be displayed. */}
 }
