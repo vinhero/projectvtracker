@@ -56,8 +56,6 @@ async function getAllRanks() {
     }
     
     async function getPlayerRanks(){
-        let leftPlayer = 1;
-        let rightPlayer = 1;
         for (var key in dictAllPlayers){
             
             await fetch(buildPlayerURL(dictAllPlayers[key]['RiotID']))
@@ -76,8 +74,9 @@ async function getAllRanks() {
                 for (let nHtmlPlayerIndex = 0; nHtmlPlayerIndex < arrHtmlPlayers.length; nHtmlPlayerIndex++) {                 
                     
                     if (arrHtmlPlayers[nHtmlPlayerIndex].textContent.includes(dictAllPlayers[key]['RiotID'])){
-                        
-                        let strIMG = '<div class="match-overview__member-rank"><img src="' + dictRankIMG[dictAllPlayers[key]['rank']] +'" height="40" width="40"></div>';
+                        let strOnClick = '\"window.open(\'https://tracker.gg/valorant/profile/riot/' + dictAllPlayers[key]['RiotID'] +'/overview\')\"';
+                        strOnClick = strOnClick.replaceAll('#', '%23')
+                        let strIMG = '<div class="match-overview__member-rank"><img src="' + dictRankIMG[dictAllPlayers[key]['rank']] +'" height="40" width="40" onclick=' + strOnClick + '></div>';
                         let strInnerHTML = document.getElementsByClassName('match-overview__member')[nHtmlPlayerIndex].innerHTML;
                         
                         if (dictAllPlayers[key]['team'] === 'left')
