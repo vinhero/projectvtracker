@@ -83,16 +83,10 @@ async function getAllRanks() {
                         if (dictAllPlayers[key]['team'] === 'left')
                         {
                             document.getElementsByClassName('match-overview__member')[nHtmlPlayerIndex].innerHTML += strIMG;
-                            dictTeamElo['leftTeam'] += dictAllPlayers[key]['elo'];
-                            dictTeamElo['leftTeam'] /= leftPlayer;
-                            leftPlayer++;
                         }
                         else if (dictAllPlayers[key]['team'] === 'right')
                         {
                             document.getElementsByClassName('match-overview__member')[nHtmlPlayerIndex].innerHTML = strIMG + strInnerHTML;
-                            dictTeamElo['rightTeam'] += dictAllPlayers[key]['elo'];
-                            dictTeamElo['leftTeam'] /= rightPlayer;
-                            rightPlayer++;
                         }
                         else { /** Team status undefined */}
                     }
@@ -123,7 +117,36 @@ async function getAllRanks() {
     }
 
     function getTeamElos(){
+        let nRCount = 0;
+        let nLCount = 0;
         
+        for (var key in dictAllPlayers)
+        {
+            const objPlayer = dictAllPlayers[key];
+            if (objPlayer['team'] === 'left')
+            {
+                dictTeamElo['leftTeam'] += objPlayer['elo'];
+                nLCount++;
+            }
+            else if (objPlayer['team'] === 'right')
+            {
+                dictTeamElo['rightTeam'] += objPlayer['elo'];
+                nRCount++;
+            }
+            
+        }
+        
+        if (nRCount > 0)
+        {
+            dictTeamElo['rightTeam'] = parseInt(dictTeamElo['rightTeam'] / nRCount);
+        } else { }
+        
+        if (nLCount > 0){
+            dictTeamElo['leftTeam'] = parseInt(dictTeamElo['leftTeam'] / nLCount);
+        }else { } 
+
+        document.getElementsByClassName('match-overview__members')[0].innerHTML += '<div> ELO:  ' + dictTeamElo['leftTeam'] + '</div>';
+        document.getElementsByClassName('match-overview__members')[1].innerHTML += '<div> ELO:  ' + dictTeamElo['rightTeam'] + '</div>';
     }
 
     // -------------------------- Start -------------------------- //
