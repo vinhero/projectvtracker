@@ -169,7 +169,6 @@ async function getAllRanks() {
         }
         await getPlayerRanks();            
         getTeamElos();
-        console.log(dictAllPlayers);
     } 
     else { /** Not all Teams are ready, therefore no Ranks can be displayed. */}
 }
