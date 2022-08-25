@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,  
-  "name": "ProjectV-Tracker",
+  "name": "ProjectV-Enhancer",
   "version": "0.1",
   "description": "It shows the ranks of all participating players in a Match.",
   "background": {
@@ -11,6 +11,7 @@
     "default_popup": "popup.html"
   },
   "host_permissions": [
-    "https://projectv.gg/matches/*"
+    "https://projectv.gg/matches/*",
+    "https://projectv.gg/profile/*"
   ]
 }

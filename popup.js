@@ -1,3 +1,14 @@
+/**
+ * TODO:
+ * Spielerränge anzeigen, selbst wenn das Spiel noch nicht angenommen wurde.
+ * unranked playerranks
+ * kompatibel selbst wenn nicht 10 Spieler?
+ * 
+ * Wenn man sich ein Team ansieht, Spieler mit Rank ausstatten
+ * 
+ * Nationalität?
+ */
+
 var m_btnGetRanks = document.getElementById("btnGetRanks");
 
 m_btnGetRanks.addEventListener("click", async () => {
@@ -19,6 +30,7 @@ async function getAllRanks() {
     // https://img.rankedboost.com/wp-content/uploads/2020/04/Iron-1-Valorant-Rank-150x150.png
     const dictRankIMG = 
     {
+        'Unranked': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/0.png',
         'Iron 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/3.png',
         'Iron 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/4.png',
         'Iron 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/5.png',
@@ -37,10 +49,13 @@ async function getAllRanks() {
         'Diamond 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/18.png',
         'Diamond 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/19.png',
         'Diamond 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/20.png',
+        'Ascendant 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/20.png', // wrong link
+        'Ascendant 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/20.png', // wrong link
+        'Ascendant 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/20.png', // wrong link
         'Immortal 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/21.png',
         'Immortal 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/22.png',
         'Immortal 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/23.png',
-        'Radiant': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/24.png',
+        'Radiant': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/24.png'
     }
 
     let dictAllPlayers = {};
@@ -88,9 +103,9 @@ async function getAllRanks() {
                         {
                             document.getElementsByClassName('match-overview__member')[nHtmlPlayerIndex].innerHTML = strIMG + strInnerHTML;
                         }
-                        else { /** Team status undefined */}
+                        else { /** Team status undefined */ }
                     }
-                    else { /** Not the right Player */}
+                    else { /** Not the right Player */ }
                 }
             });
         }
@@ -110,7 +125,7 @@ async function getAllRanks() {
             {
                 strPlayerTag += strPlayerID[nCharIndex];
             }
-            else {/** Do not add the character anywhere. */}
+            else { /** Do not add the character anywhere. */ }
         }
 
         return (strApiUrl + strPlayerName + '/' + strPlayerTag).replaceAll(' ', '%20');
@@ -158,6 +173,7 @@ async function getAllRanks() {
             dictAllPlayers[strRiotID] = { "RiotID": strRiotID };
             
             // Add Team to Player
+            // TODO: funktioniert nicht wenn Spieleranzahl < 5 o. Spieleranzahl > 5
             if (index < 5)
             {
                 dictAllPlayers[strRiotID]['team'] = 'left';
@@ -170,5 +186,5 @@ async function getAllRanks() {
         await getPlayerRanks();            
         getTeamElos();
     } 
-    else { /** Not all Teams are ready, therefore no Ranks can be displayed. */}
+    else { /** Not all Teams are ready, therefore no Ranks can be displayed. */ }
 }
