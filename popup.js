@@ -7,13 +7,18 @@
  * 
  * Ladesymbol
  * 
+ * schonmal angefragte spieler für die Sitzung speichern (reduktion der Anfragen),
+ * Bilder zwischenspeichern?
+ * 
+ * 
  * Wenn man sich ein Team ansieht, Spieler mit Rank ausstatten
  * 
  * Nationalität?
  * 
  * durchschnittliche Gegner elo?
  * 
- * Durchschnitt Elo Team (ladderseite)
+ * Durchschnitt Elo Team (Rank Icon?) (5 hightesrated)(ladderseite)
+ * Filter nach Ingame MMR? (LadderSeite)
  * 
  */
 
@@ -39,7 +44,6 @@ async function getAllRanks() {
     const strMatchUrl = "https://projectv.gg/matches/";
     const strTeamUrl = "https://projectv.gg/teams/";
 
-    
     // Settings
     let blnEnhanceMatch = document.baseURI.includes(strMatchUrl);
     let blnEnhanceTeam = document.baseURI.includes(strTeamUrl);
@@ -47,7 +51,7 @@ async function getAllRanks() {
 
     let strTrackerSection = "overview";
     
-    console.log("start");
+
     // User wants to Enhance a Match
     if (blnEnhanceMatch) {
         
@@ -64,7 +68,7 @@ async function getAllRanks() {
         }
         
         // Teams are not ready
-        else { /** Not all Teams are ready, therefore no Ranks can be displayed. */ }
+        else { /** Not all Teams are ready, therefore no Ranks can be displayed without scraping the RiotIDs. */ }
     }
     
     // User wants to Enhance a Team
@@ -74,15 +78,15 @@ async function getAllRanks() {
     
     // User wants to Enhance a Profile
     else if (blnEnhanceProfile) {
-        console.log("profile");
         const strRankClassName = "statistic-section__logo";
         const strRiotIdClassName = "statistic-section__name";
         let strRiotID = getRiotID(document.querySelector("." + strRiotIdClassName).innerHTML);
-        console.log("id = " + strRiotID);
         let objPlayerInfo = await getPlayerInfo(strRiotID);
 
-        console.log(objPlayerInfo);
-        let htmlRankElement = createRankElement(objPlayerInfo);
+        let htmlRankElement = createRankElement(objPlayerInfo, strRankClassName);
+
+        // Replace Logo with Rank
+        document.querySelector("." + strRankClassName).replaceWith(htmlRankElement);
     }
     
     else { /** Case not specified yet. */}
@@ -114,38 +118,59 @@ async function getAllRanks() {
 
             else { /** discard. */ }
         }
-        
         return (strApiUrl + strPlayerName + '/' + strPlayerTag).replaceAll(' ', '%20');
     }
         
-    function createRankElemnt(playerInfo) {
+    function createRankElement(playerInfo) {
+        return createRankElement(playerInfo, null);
+    }
+
+    function createRankElement(playerInfo, strClassName) {
+        let strWidth = "90";
+        let strHeight = "90";
+        let strPaddingButtom = "10";
         let strTagName = "IMG";
-        let strOnclick = `window.open(\'${strTrackerUrl}${playerInfo.RiotID}/${strTrackerSection}\')`;
-        let htmlRankElement = new HTMLElement(strTagName);
-        
+        let strOnclick = `window.open(\'${strTrackerUrl}${playerInfo.RiotID.replaceAll('#', '%23')}/${strTrackerSection}\')`;
+        let htmlRankElement = document.createElement(strTagName);
+
+        htmlRankElement.src = playerInfo.RankImg;
+        htmlRankElement.width = strWidth;
+        htmlRankElement.height = strHeight;
+        htmlRankElement.padding = strPaddingButtom;
+        htmlRankElement.onClick = strOnclick;
+
+        if (strClassName != null)
+            htmlRankElement.class = strClassName;
+
         return htmlRankElement;
     }
 
     // Promises
     async function getPlayerInfo(strRiotID) {
-        console.log("playerinfo");
         const strUnrankedUrl = "https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/0.png";
         let objPlayerInfo = new Object();
         objPlayerInfo.RiotID = strRiotID;
-        return fetch(buildApiUrl(strRiotID))
+
+        console.log(buildApiUrl(strRiotID));
+        return await fetch(buildApiUrl(strRiotID))
+        
+        .then((response) => response.json())
         
         // return important data
-        .then((response) => {
-            objPlayerInfo.RankImg = response.data.images.large;
-            objPlayerInfo.RankName = response.data.currenttierpatched;
+        .then((jsonData) => {
+            console.log(jsonData)
+            objPlayerInfo.RankImg = jsonData.data.images.large;
+            objPlayerInfo.RankName = jsonData.data.currenttierpatched;
             return objPlayerInfo;
         })
 
         // if something goes wrong during fetch
         .catch((error) => {
+            console.log(error.json);
             objPlayerInfo.RankImg = strUnrankedUrl;
             objPlayerInfo.RankName = "Unranked";
             return objPlayerInfo;
-        });
+        })
+        ;
     }
 }
