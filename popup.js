@@ -3,10 +3,18 @@
  * Spielerränge anzeigen, selbst wenn das Spiel noch nicht angenommen wurde.
  * unranked playerranks
  * kompatibel selbst wenn nicht 10 Spieler?
+ * Error am Saison beginn
+ * 
+ * Ladesymbol
  * 
  * Wenn man sich ein Team ansieht, Spieler mit Rank ausstatten
  * 
  * Nationalität?
+ * 
+ * durchschnittliche Gegner elo?
+ * 
+ * Durchschnitt Elo Team (ladderseite)
+ * 
  */
 
 var m_btnGetRanks = document.getElementById("btnGetRanks");
