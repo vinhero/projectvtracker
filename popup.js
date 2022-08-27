@@ -1,9 +1,7 @@
 /**
  * TODO:
  * Spielerränge anzeigen, selbst wenn das Spiel noch nicht angenommen wurde.
- * unranked playerranks
  * kompatibel selbst wenn nicht 10 Spieler?
- * Error am Saison beginn
  * 
  * Ladesymbol
  * 
@@ -60,15 +58,18 @@ async function getAllRanks() {
         
         const strTeamClassName = "match-overview__members";
         const htmlCollection_Teams = document.getElementsByClassName(strTeamClassName);
-        
+
+        let dictTeamInfo = { };
+
         // Teams are ready
-        if (arrTeamStatus.length === 2)
-        {
-            
+        if (arrTeamStatus.length === 2) {
+            dictTeamInfo = createTeamInfo(htmlCollection_Teams);
         }
         
         // Teams are not ready
-        else { /** Not all Teams are ready, therefore no Ranks can be displayed without scraping the RiotIDs. */ }
+        else { 
+            dictTeamInfo = createTeamInfo(htmlCollection_Teams, true);
+        }
     }
     
     // User wants to Enhance a Team
@@ -125,6 +126,7 @@ async function getAllRanks() {
         return createRankElement(playerInfo, null);
     }
 
+    // TODO: Rework
     function createRankElement(playerInfo, strClassName) {
         let strWidth = "90";
         let strHeight = "90";
@@ -143,6 +145,35 @@ async function getAllRanks() {
             htmlRankElement.class = strClassName;
 
         return htmlRankElement;
+    }
+
+    function createTeamInfo(htmlCollection) {
+        return createTeamInfo(htmlCollection, false);
+    }
+
+    function createTeamInfo(htmlCollection, blnScrabbing) {
+        let dictReturn = { };
+        
+        // build Teams
+        for (let nTeamIndex = 0; nTeamIndex < htmlCollection.length; nTeamIndex++) {
+            let dictTeam = { };
+            let strSide = nTeamIndex == 0 ? "Left" : nTeamIndex == 1 ? "Right" : null;
+            let team = htmlCollection[nTeamIndex];
+            
+            // build Players
+            let promises = [];
+            for (let nPlayerIndex = 0; nPlayerIndex < team.length; nPlayerIndex) {
+                const strPlayerIDClassName = "match-overview__member-gameaccount";
+                let htmlPlayer = team[nPlayerIndex];
+                let strRiotID = getRiotID(htmlPlayer.querySelector("." + strPlayerIDClassName).textContent);
+                promises.push(getPlayerInfo(strRiotID));
+            }
+            Promise.all(promises).then((data) => console.log(data));
+            
+            dictReturn[strSide] = dictTeam;
+        }
+
+        return dictReturn;
     }
 
     // Promises
