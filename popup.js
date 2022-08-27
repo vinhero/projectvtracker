@@ -34,36 +34,40 @@ async function getAllRanks() {
     const arrHtmlPlayers = document.getElementsByClassName('match-overview__member-gameaccount');
     const arrTeamStatus = document.getElementsByClassName('match-overview__encounter-ready match-overview__encounter-ready--is-ready');
     const strApiUrl = 'https://api.henrikdev.xyz/valorant/v1/mmr/eu/';
+
+    const strProfileUrl = "https://projectv.gg/profile/";
+    const strMatchUrl = "https://projectv.gg/matches/"
     
-    // https://img.rankedboost.com/wp-content/uploads/2020/04/Iron-1-Valorant-Rank-150x150.png
+    // Source: https://tracker.gg/valorant
+    // Source: https://senpai.gg/valorant/ranks
     const dictRankIMG = 
     {
         'Unranked': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/0.png',
-        'Iron 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/3.png',
-        'Iron 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/4.png',
-        'Iron 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/5.png',
-        'Bronze 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/6.png',
-        'Bronze 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/7.png',
-        'Bronze 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/8.png',
-        'Silver 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/9.png',
-        'Silver 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/10.png',
-        'Silver 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/11.png',
-        'Gold 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/12.png',
-        'Gold 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/13.png',
-        'Gold 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/14.png',
-        'Platin 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/15.png',
-        'Platin 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/16.png',
-        'Platin 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/17.png',
-        'Diamond 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/18.png',
-        'Diamond 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/19.png',
-        'Diamond 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/20.png',
-        'Ascendant 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/20.png', // wrong link
-        'Ascendant 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/20.png', // wrong link
-        'Ascendant 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/20.png', // wrong link
-        'Immortal 1': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/21.png',
-        'Immortal 2': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/22.png',
-        'Immortal 3': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/23.png',
-        'Radiant': 'https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/24.png'
+        'Iron 1': 'https://static.senpai.gg/_nuxt/img/882a6ab.webp',
+        'Iron 2': 'https://static.senpai.gg/_nuxt/img/308c6b1.webp',
+        'Iron 3': 'https://static.senpai.gg/_nuxt/img/0d2c2e2.webp',
+        'Bronze 1': 'https://static.senpai.gg/_nuxt/img/0978c02.webp',
+        'Bronze 2': 'https://static.senpai.gg/_nuxt/img/f35cc12.webp',
+        'Bronze 3': 'https://static.senpai.gg/_nuxt/img/d755c0b.webp',
+        'Silver 1': 'https://static.senpai.gg/_nuxt/img/7045b2e.webp',
+        'Silver 2': 'https://static.senpai.gg/_nuxt/img/e44cf4c.webp',
+        'Silver 3': 'https://static.senpai.gg/_nuxt/img/2eabb1e.webp',
+        'Gold 1': 'https://static.senpai.gg/_nuxt/img/d4ba2e0.webp',
+        'Gold 2': 'https://static.senpai.gg/_nuxt/img/8f2dca4.webp',
+        'Gold 3': 'https://static.senpai.gg/_nuxt/img/d80a217.webp',
+        'Platin 1': 'https://static.senpai.gg/_nuxt/img/5302762.webp',
+        'Platin 2': 'https://static.senpai.gg/_nuxt/img/96f79d7.webp',
+        'Platin 3': 'https://static.senpai.gg/_nuxt/img/80d9eda.webp',
+        'Diamond 1': 'https://static.senpai.gg/_nuxt/img/29bb3a9.webp',
+        'Diamond 2': 'https://static.senpai.gg/_nuxt/img/8a3932d.webp',
+        'Diamond 3': 'https://static.senpai.gg/_nuxt/img/303e9a9.webp',
+        'Ascendant 1': 'https://static.senpai.gg/_nuxt/img/4ab8f39.webp',
+        'Ascendant 2': 'https://static.senpai.gg/_nuxt/img/0d4cb42.webp',
+        'Ascendant 3': 'https://static.senpai.gg/_nuxt/img/9975b8f.webp',
+        'Immortal 1': 'https://static.senpai.gg/_nuxt/img/683d7b3.webp',
+        'Immortal 2': 'https://static.senpai.gg/_nuxt/img/ed6acd3.webp',
+        'Immortal 3': 'https://static.senpai.gg/_nuxt/img/3d3a5fc.webp',
+        'Radiant': 'https://static.senpai.gg/_nuxt/img/09fc2e7.webp'
     }
 
     let dictAllPlayers = {};

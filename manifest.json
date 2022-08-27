@@ -12,6 +12,7 @@
   },
   "host_permissions": [
     "https://projectv.gg/matches/*",
+    "https://projectv.gg/teams/*",
     "https://projectv.gg/profile/*"
   ]
 }

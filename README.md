@@ -1,2 +1,2 @@
 # projectvtracker
-its supposed display the ranks of all the participants of a match
+A plugin to make the information about your opponents more accessable - on projectv
