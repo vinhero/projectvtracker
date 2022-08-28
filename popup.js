@@ -150,7 +150,7 @@ async function getAllRanks() {
         return createTeamInfo(htmlCollection, false);
     }
 
-    function createTeamInfo(htmlCollection, blnScrabbing) {
+    async function createTeamInfo(htmlCollection, blnScrabbing) {
         let dictReturn = { };
         
         // build Teams
@@ -172,7 +172,7 @@ async function getAllRanks() {
                 }
                 else { /** Not a Player. */ }
             }
-            getPlayerInfos(arrRiotIDs);
+            let arrPlayerInfos = await getPlayerInfos(arrRiotIDs);
 
             dictReturn[strSide] = dictTeam;
         }
@@ -212,7 +212,15 @@ async function getAllRanks() {
             }));
         }
         
-        arrPlayerInfos = await Promise.all(arrPromises).catch((error) => console.log('error'));
+        // arrPlayerInfos = await Promise.all(arrPromises).catch((error) => console.log('error'));
+        await Promise.all(arrPromises)
+        
+        // add to array / list
+        .then(promises => {Promise.all(promises.map(aPromise => arrPlayerInfos.push(aPromise)))})
+        
+        // catch error
+        .catch((error) => console.log('errormsg'));
+
         return arrPlayerInfos;
     }
 }
