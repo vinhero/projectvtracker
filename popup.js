@@ -57,17 +57,19 @@ async function getAllRanks() {
         const strTeamClassName = "match-overview__members";
         const htmlCollection_Teams = document.getElementsByClassName(strTeamClassName);
 
-        let dictTeamInfo = { };
+        let dictMatchInfo = { };
 
         // Teams are ready
         if (arrTeamStatus.length === 2) {
-            dictTeamInfo = createTeamInfo(htmlCollection_Teams);
+            dictMatchInfo = await createMatchInfo(htmlCollection_Teams);
         }
         
         // Teams are not ready
         else { 
-            dictTeamInfo = createTeamInfo(htmlCollection_Teams, true);
+            dictMatchInfo = await createMatchInfo(htmlCollection_Teams, true);
         }
+
+        addRanksToMatchpage(dictMatchInfo);
     }
     
     // User wants to Enhance a Team
@@ -98,6 +100,10 @@ async function getAllRanks() {
         strShortened = strShortened.trimStart();
         strShortened = strShortened.trimEnd();
         return strShortened;
+    }
+
+    function getRiotIDOfProfie(aDocument) {
+        
     }
     
     function buildApiUrl(strPlayerID) {        
@@ -146,11 +152,11 @@ async function getAllRanks() {
         return htmlRankElement;
     }
 
-    function createTeamInfo(htmlCollection) {
-        return createTeamInfo(htmlCollection, false);
+    async function createMatchInfo(htmlCollection) {
+        return await createMatchInfo(htmlCollection, false);
     }
 
-    async function createTeamInfo(htmlCollection, blnScrabbing) {
+    async function createMatchInfo(htmlCollection, blnScraping) {
         let dictReturn = { };
         
         // build Teams
@@ -161,27 +167,54 @@ async function getAllRanks() {
             
             // build Players
             let arrRiotIDs = [];
+            let arrProfileNames = [];
             for (let nPlayerIndex = 0; nPlayerIndex < team.length; nPlayerIndex++) {
                 const strPlayerClassName = "match-overview__member";
+                const strProfileNameClassName = "match-overview__member-username";
                 const strPlayerIDClassName = "match-overview__member-gameaccount";
-                
                 let htmlPlayer = team[nPlayerIndex];
+                
+                // Element is a Player
                 if (htmlPlayer.className == strPlayerClassName) {
-                    let strRiotID = getRiotID(htmlPlayer.querySelector("." + strPlayerIDClassName).textContent);
+                    let strProfileName = htmlPlayer.querySelector("." + strProfileNameClassName).title;
+                    arrProfileNames.push(strProfileName);
+                    let strRiotID = "";
+                    
+                    // RiotIDs are on the Matchpage
+                    if (blnScraping === false || blnScraping == null){
+                        strRiotID = getRiotID(htmlPlayer.querySelector("." + strPlayerIDClassName).textContent);
+                    }
+                        
+                    // RiotIDs have to be Scraped from the Players Profilepage
+                    else if (blnScraping === true){
+                        let strScrapedRiotID = scrapeRiotID(strProfileName);
+                        strRiotID = getRiotID(strScrapedRiotID);
+                    }
+                    
+                    else { /** Case not specified yet. */ }
                     arrRiotIDs.push(strRiotID);
                 }
                 else { /** Not a Player. */ }
             }
-            let arrPlayerInfos = await getPlayerInfos(arrRiotIDs);
-
-            dictReturn[strSide] = dictTeam;
+            await getPlayerInfos(arrRiotIDs, arrProfileNames)
+            
+            // add team to matchinfo
+            .then((players) => {
+                console.log(players);
+                dictTeam.Players = players;
+                dictReturn[strSide] = dictTeam;
+            });
         }
 
         return dictReturn;
     }
 
     // Promises
-    async function getPlayerInfos(arrRiotIDs) {
+    async function getPlayerInfos(arrRiotIDs){
+        return await getPlayerInfos(arrRiotIDs, null);
+    }
+
+    async function getPlayerInfos(arrRiotIDs, arrProfileNames) {
         const strUnrankedUrl = "https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/0.png";
         
         let arrPlayerInfos = [];
@@ -191,6 +224,11 @@ async function getAllRanks() {
             let strApiUrl = buildApiUrl(strRiotID);
             
             let objPlayerInfo = new Object();
+            if (arrProfileNames != null) {
+                objPlayerInfo.Profile = arrProfileNames[nIdIndex];
+            }
+            else { /** no profile names givin. */}
+
             objPlayerInfo.RiotID = strRiotID;
             arrPromises.push(fetch(strApiUrl)
             
@@ -212,7 +250,6 @@ async function getAllRanks() {
             }));
         }
         
-        // arrPlayerInfos = await Promise.all(arrPromises).catch((error) => console.log('error'));
         await Promise.all(arrPromises)
         
         // add to array / list
@@ -222,5 +259,21 @@ async function getAllRanks() {
         .catch((error) => console.log('errormsg'));
 
         return arrPlayerInfos;
+    }
+
+    function scrapeRiotID(strProfileName) {
+        let strRiotID = "";
+
+        // convert profilename, so it can be used in the url
+        let strConvertedProfileName = strProfileName.toLowerCase();
+        strConvertedProfileName = strConvertedProfileName.replaceAll(" ", "-");
+
+        let strScrapeUrl = strProfileUrl + strConvertedProfileName;
+
+        return strRiotID;
+    }
+
+    function addRanksToMatchpage(dictTeamInfos) {
+
     }
 }
