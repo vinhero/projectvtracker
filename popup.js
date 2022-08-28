@@ -3,16 +3,17 @@
  * (high) Spielerränge anzeigen, selbst wenn das Spiel noch nicht angenommen wurde.
  * (high) kompatibel selbst wenn nicht 10 Spieler?
  * (high) Settings-Page
+ * (high) schonmal angefragte spieler für die Sitzung speichern (reduktion der Anfragen),
  * 
+ * (mid) verändertes aussehen der Matchpage
  * (mid) durchschnittliche Gegner elo?
- * (mid) schonmal angefragte spieler für die Sitzung speichern (reduktion der Anfragen),
  * (mid) Wenn man sich ein Team ansieht, Spieler mit Rank ausstatten
+ * (mid) Ladesymbol
  * 
- * (low) Ladesymbol
  * (low) Bilder zwischenspeichern?
  * (low) Durchschnitt Elo Team (Rank Icon?) (5 hightesrated)(ladderseite) (Loadingqueue)
- * (low) Nationalität?
  * 
+ * (very low) Nationalität?
  * (very low) Filter nach Ingame MMR? (LadderSeite)
  */
 
@@ -79,7 +80,8 @@ async function getAllRanks() {
         const strRankClassName = "statistic-section__logo";
         const strRiotIdClassName = "statistic-section__name";
         let strRiotID = getRiotID(document.querySelector("." + strRiotIdClassName).innerHTML);
-        let objPlayerInfo = await getPlayerInfos(strRiotID);
+        let arrPlayerInfo = await getPlayerInfos([strRiotID]);
+        let objPlayerInfo = arrPlayerInfo[0];
 
         let htmlRankElement = createRankElement(objPlayerInfo, strRankClassName);
 
@@ -187,12 +189,30 @@ async function getAllRanks() {
         for (let nIdIndex = 0; nIdIndex < arrRiotIDs.length; nIdIndex++) {
             let strRiotID = arrRiotIDs[nIdIndex];
             let strApiUrl = buildApiUrl(strRiotID);
-            arrPromises.push(fetch(strApiUrl));
-
+            
             let objPlayerInfo = new Object();
             objPlayerInfo.RiotID = strRiotID;
+            arrPromises.push(fetch(strApiUrl)
+            
+            // convert to json
+            .then(response => response.json())
+            
+            // return important data
+            .then(jsonData => {
+                objPlayerInfo.RankImg = jsonData.data.images.large;
+                objPlayerInfo.RankName = jsonData.data.currenttierpatched;
+                return objPlayerInfo;
+            })
+            
+            // fallback
+            .catch((error) => {
+                objPlayerInfo.RankImg = strUnrankedUrl;
+                objPlayerInfo.RankName = "Unranked";
+                return objPlayerInfo;
+            }));
         }
         
-        await Promise.all(arrPromises).then((data) => console.log(data)).catch((error) => console.log('error'));
+        arrPlayerInfos = await Promise.all(arrPromises).catch((error) => console.log('error'));
+        return arrPlayerInfos;
     }
 }
