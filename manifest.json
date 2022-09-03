@@ -4,11 +4,11 @@
   "version": "0.1",
   "description": "It shows the ranks of all participating players in a Match.",
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background/background.js"
   },
   "permissions": ["storage", "activeTab", "scripting", "tabs"],
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup/popup.html"
   },
   "host_permissions": [
     "https://projectv.gg/matches/*",
