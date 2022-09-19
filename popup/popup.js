@@ -48,7 +48,6 @@ async function getAllRanks() {
     
 
     // User wants to Enhance a Match
-    console.log('debug');
     if (blnEnhanceMatch) {
         
         const strStatusClassName = "match-overview__encounter-ready match-overview__encounter-ready--is-ready";
