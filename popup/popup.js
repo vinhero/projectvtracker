@@ -58,15 +58,8 @@ async function getAllRanks() {
 
         let dictMatchInfo = { };
 
-        // Teams are ready
-        if (arrTeamStatus.length === 2) {
-            dictMatchInfo = await createMatchInfo(htmlCollection_Teams);
-        }
-        
-        // Teams are not ready
-        else { 
-            dictMatchInfo = await createMatchInfo(htmlCollection_Teams, true);
-        }
+        let blnTeamAreReady = arrTeamStatus.length === 2;
+        dictMatchInfo = await createMatchInfo(htmlCollection_Teams, !blnTeamAreReady);
 
         addRanksToMatchpage(dictMatchInfo);
     }
