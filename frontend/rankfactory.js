@@ -22,6 +22,20 @@ class RankFactory {
         this.strTagName = "IMG";
     }
 
+    
+    createHtmlRank(player) {
+        let strOnclick = `window.open(\'${this.strTrackerUrl}${player.RiotID.replaceAll('#', '%23')}/${this.strTrackerSection}\')`;
+        let htmlRankElement = document.createElement(this.strTagName);
+        
+        htmlRankElement.src = player.RankImg;
+        htmlRankElement.width = this.strWidth;
+        htmlRankElement.height = this.strHeight;
+        htmlRankElement.padding = this.strPaddingButtom;
+        htmlRankElement.onClick = strOnclick;
+        
+        return htmlRankElement;
+    }
+    
     createPlayerElement(player) {
         this.setupPlayerElement();
         return this.createHtmlRank(player);
@@ -30,18 +44,5 @@ class RankFactory {
     createMatchElement(player) {
         this.setupMatchElement();
         return this.createHtmlRank(player);
-    }
-
-    createHtmlRank(player) {
-        let strOnclick = `window.open(\'${this.strTrackerUrl}${player.RiotID.replaceAll('#', '%23')}/${this.strTrackerSection}\')`;
-        let htmlRankElement = document.createElement(this.strTagName);
-
-        htmlRankElement.src = player.RankImg;
-        htmlRankElement.width = this.strWidth;
-        htmlRankElement.height = this.strHeight;
-        htmlRankElement.padding = this.strPaddingButtom;
-        htmlRankElement.onClick = strOnclick;
-
-        return htmlRankElement;
     }
 }

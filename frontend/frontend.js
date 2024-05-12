@@ -9,7 +9,7 @@ const strProfileUrl = "https://projectv.gg/profile/";
 const strMatchUrl = "https://projectv.gg/matches/";
 const strTeamUrl = "https://projectv.gg/teams/";
 
-// Settings
+// 
 let blnEnhanceMatch = document.baseURI.includes(strMatchUrl);
 let blnEnhanceTeam = document.baseURI.includes(strTeamUrl);
 let blnEnhanceProfile = document.baseURI.includes(strProfileUrl);
@@ -18,7 +18,7 @@ let strTrackerSection = "overview";
 
 setTimeout(() => {
     execRanks()
-}, 2.0 * 1000)
+}, 2.0 * 1000);
 
 function execRanks() {
     console.log("started.")
@@ -42,15 +42,29 @@ function execRanks() {
 
 async function enhanceMatch() {
     console.log("enhancing Match");
-    const strStatusClassName = "match-overview__encounter-ready match-overview__encounter-ready--is-ready";
-    const arrTeamStatus = document.getElementsByClassName(strStatusClassName);
+
+    let arrPlayers = [];
+    let strStatus = "";
+    chrome.runtime.sendMessage({type: "enhanceMatch", matchID: document.baseURI.replace(strMatchUrl, "")}, function(response) {
+        if (response.success) {
+            console.log("success");
+            let jsonData = response.data;
+            console.log(jsonData);
+            strStatus = jsonData.status;
+            for (let lineup in jsonData.encounters){
+                for (let player in jsonData.encounters[lineup].lineups){
+                    arrPlayers.push(jsonData.encounters[lineup].lineups[player].user.gameaccounts[0].value);
+                }
+            }
+        } else {
+          console.error('Fehler beim Abrufen der Daten:', response.error);
+        }
+    });
     
-    const strTeamClassName = "match-overview__members";
-    const htmlCollection_Teams = document.getElementsByClassName(strTeamClassName);
 
     let dictMatchInfo = { };
 
-    let blnTeamAreReady = arrTeamStatus.length === 2;
+    let blnTeamAreReady = strStatus != "PENDING";
     dictMatchInfo = await createMatchInfo(htmlCollection_Teams, !blnTeamAreReady);
     console.log(dictMatchInfo);
 
@@ -79,10 +93,6 @@ function getRiotID (strUnshortened) {
     return strShortened;
 }
 
-function getRiotIDOfProfie(aDocument) {
-    
-}
-
 function buildApiUrl(strPlayerID) {        
     let nIndexHashtag = strPlayerID.indexOf('#');
     let strPlayerName = '';
@@ -102,31 +112,6 @@ function buildApiUrl(strPlayerID) {
         else { /** discard. */ }
     }
     return (strApiUrl + strPlayerName + '/' + strPlayerTag).replaceAll(' ', '%20');
-}
-    
-function createRankElement(playerInfo) {
-    return createRankElement(playerInfo, null);
-}
-
-// TODO: Rework
-function createRankElement(playerInfo, strClassName) {
-    let strWidth = "90";
-    let strHeight = "90";
-    let strPaddingButtom = "10";
-    let strTagName = "IMG";
-    let strOnclick = `window.open(\'${strTrackerUrl}${playerInfo.RiotID.replaceAll('#', '%23')}/${strTrackerSection}\')`;
-    let htmlRankElement = document.createElement(strTagName);
-
-    htmlRankElement.src = playerInfo.RankImg;
-    htmlRankElement.width = strWidth;
-    htmlRankElement.height = strHeight;
-    htmlRankElement.padding = strPaddingButtom;
-    htmlRankElement.onClick = strOnclick;
-
-    if (strClassName != null)
-        htmlRankElement.class = strClassName;
-
-    return htmlRankElement;
 }
 
 async function createMatchInfo(htmlCollection) {
@@ -173,11 +158,11 @@ async function createMatchInfo(htmlCollection, blnScraping) {
             }
             else { /** Not a Player. */ }
         }
+        console.log(arrRiotIDs);
         await getPlayerInfos(arrRiotIDs, arrProfileNames)
         
         // add team to matchinfo
         .then((players) => {
-            console.log(players);
             dictTeam.Players = players;
             dictReturn[strSide] = dictTeam;
         });
@@ -253,7 +238,6 @@ function scrapeRiotID(strProfileName) {
 function addRanksToMatchpage(dictTeamInfos) {
     for (let side in dictTeamInfos) {
         let team = dictTeamInfos[side];
-        console.log(team);
         for (let player of team.Players) {
             let rankFactory = new RankFactory();
             let htmlRankElement = rankFactory.createMatchElement(player);

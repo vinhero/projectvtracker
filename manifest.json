@@ -18,13 +18,15 @@
       "matches": [
         "https://projectv.gg/matches/*",
         "https://projectv.gg/teams/*",
-        "https://projectv.gg/profile/*"
+        "https://projectv.gg/profile/*",
+        "https://api.projectv.gg/*"
       ]
     }
   ],
   "host_permissions": [
     "https://projectv.gg/matches/*",
     "https://projectv.gg/teams/*",
-    "https://projectv.gg/profile/*"
+    "https://projectv.gg/profile/*",
+    "https://api.projectv.gg/*"
   ]
 }
