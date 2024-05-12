@@ -21,7 +21,6 @@ class RankFactory {
         this.strPaddingButtom = "15";
         this.strTagName = "IMG";
     }
-
     
     createHtmlRank(player) {
         let strOnclick = `window.open(\'${this.strTrackerUrl}${player.RiotID.replaceAll('#', '%23')}/${this.strTrackerSection}\')`;
@@ -35,7 +34,7 @@ class RankFactory {
         
         return htmlRankElement;
     }
-    
+
     createPlayerElement(player) {
         this.setupPlayerElement();
         return this.createHtmlRank(player);

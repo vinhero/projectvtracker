@@ -21,7 +21,6 @@ setTimeout(() => {
 }, 2.0 * 1000);
 
 function execRanks() {
-    console.log("started.")
     // User wants to Enhance a Match
     if (blnEnhanceMatch) {
         enhanceMatch();
@@ -51,7 +50,7 @@ async function enhanceMatch() {
             // strStatus = jsonData.status;
             for (let lineup in jsonData.encounters){
                 for (let player in jsonData.encounters[lineup].lineups){
-                    arrPlayers.push(jsonData.encounters[lineup].lineups[player].user.gameaccounts[0].value);
+                    arrPlayers.push(jsonData.encounters[lineup]?.lineups[player]?.user?.gameaccounts[0]?.value ?? "");
                 }
             }
 
@@ -80,23 +79,8 @@ async function enhanceTeam() {
 }
 
 function buildApiUrl(strPlayerID) {        
-    let nIndexHashtag = strPlayerID.indexOf('#');
-    let strPlayerName = '';
-    let strPlayerTag = '';
-    for (let nCharIndex = 0; strPlayerID.length > nCharIndex; nCharIndex++)
-    {
-        // ID Name
-        if (nCharIndex < nIndexHashtag) {
-            strPlayerName += strPlayerID[nCharIndex];
-        }
-
-        // ID Tag
-        else if (nCharIndex > nIndexHashtag) {
-            strPlayerTag += strPlayerID[nCharIndex];
-        }
-
-        else { /** discard. */ }
-    }
+    let strPlayerName = strPlayerID.split("#")[0];
+    let strPlayerTag = strPlayerID.split("#")[1];
     return (strApiUrl + strPlayerName + '/' + strPlayerTag).replaceAll(' ', '%20');
 }
 
@@ -149,10 +133,12 @@ function addRanksToMatchpage(dictPlayerInfos) {
         let htmlRankElement = rankFactory.createMatchElement(player);
 
         for (let element = 0; element < document.getElementsByClassName("match-overview__member").length; element++){
-            if (document.getElementsByClassName("match-overview__member")[element].getElementsByClassName("match-overview__member-gameaccount")[0].textContent.includes(player.RiotID)) {
+            if (player.RiotID != "" && document.getElementsByClassName("match-overview__member")[element].getElementsByClassName("match-overview__member-gameaccount")[0].innerText.includes(player.RiotID)) {
+                document.getElementsByClassName("match-overview__member")[element].appendChild(htmlRankElement);
+            }
+            else if (player.RiotID == "" && document.getElementsByClassName("match-overview__member")[element].getElementsByClassName("match-overview__member-gameaccount")[0].innerText == player.RiotID) {
                 document.getElementsByClassName("match-overview__member")[element].appendChild(htmlRankElement);
             }
         }
     }
-    document.getElementsByClassName("match-overview__member")[0].getElementsByClassName("match-overview__member-gameaccount")[0].textContent
 }

@@ -14,13 +14,11 @@ async function fetchJSON(url) {
     function(request, sender, sendResponse) {
         
         if (request.type == "enhanceMatch"){
-            
             fetchJSON(("https://api.projectv.gg/api/v1/frontend/matches/" + request.matchID +"?expand=encounters.lineups.user.gameaccounts"))
             
             .then(response => {
                 sendResponse(response);
             })
-            
         }
 
         // async
