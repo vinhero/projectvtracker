@@ -41,6 +41,7 @@ function execRanks() {
 }
 
 async function enhanceMatch() {
+    console.log("enhancing Match");
     const strStatusClassName = "match-overview__encounter-ready match-overview__encounter-ready--is-ready";
     const arrTeamStatus = document.getElementsByClassName(strStatusClassName);
     
@@ -51,11 +52,13 @@ async function enhanceMatch() {
 
     let blnTeamAreReady = arrTeamStatus.length === 2;
     dictMatchInfo = await createMatchInfo(htmlCollection_Teams, !blnTeamAreReady);
+    console.log(dictMatchInfo);
 
     addRanksToMatchpage(dictMatchInfo);
 }
 
 async function enhanceTeam() {
+    console("enhancing Team");
     const strRankClassName = "statistic-section__logo";
     const strRiotIdClassName = "statistic-section__name";
     let strRiotID = getRiotID(document.querySelector("." + strRiotIdClassName).innerHTML);
@@ -248,5 +251,19 @@ function scrapeRiotID(strProfileName) {
 }
 
 function addRanksToMatchpage(dictTeamInfos) {
-    
+    for (let side in dictTeamInfos) {
+        let team = dictTeamInfos[side];
+        console.log(team);
+        for (let player of team.Players) {
+            let rankFactory = new RankFactory();
+            let htmlRankElement = rankFactory.createMatchElement(player);
+
+            for (let element = 0; element < document.getElementsByClassName("match-overview__member").length; element++){
+                if (document.getElementsByClassName("match-overview__member")[element].getElementsByClassName("match-overview__member-gameaccount")[0].textContent.includes(player.RiotID)) {
+                    document.getElementsByClassName("match-overview__member")[element].appendChild(htmlRankElement);
+                }
+            }
+        }
+        document.getElementsByClassName("match-overview__member")[0].getElementsByClassName("match-overview__member-gameaccount")[0].textContent
+    }
 }

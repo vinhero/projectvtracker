@@ -4,7 +4,7 @@
   "version": "0.1",
   "description": "It shows the ranks of all participating players in a Match.",
   "background": {
-    "service_worker": "background/background.js"
+    "service_worker": "backend/backend.js"
   },
   "permissions": ["storage", "activeTab", "scripting", "tabs"],
   "action": {
@@ -13,7 +13,7 @@
   "content_scripts": [
     {
       "js": [
-        "scripts/ranks.js"
+        "frontend/frontend.js", "frontend/rankfactory.js"
       ],
       "matches": [
         "https://projectv.gg/matches/*",
