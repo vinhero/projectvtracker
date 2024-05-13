@@ -4,6 +4,32 @@ const strUnrankedUrl = "https://trackercdn.com/cdn/tracker.gg/valorant/icons/tie
 const strProjectVApiUrl = "https://api.projectv.gg/api/v1/frontend/matches/";
 const strProjectVApiKeys = "?expand=encounters.lineups.user.gameaccounts";
 
+const strProfileUrl = "https://projectv.gg/profile/";
+const strMatchUrl = "https://projectv.gg/matches/";
+const strTeamUrl = "https://projectv.gg/teams/";
+
+let debounceTimer;
+
+function sendMatchRequest(tabId) {
+  chrome.tabs.sendMessage(tabId, {action: "match"}, function(response) {
+      console.log("match message sent");
+  });
+}
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) { 
+  if (changeInfo.status == 'complete') {
+    console.log("Tab is loaded.");
+    clearTimeout(debounceTimer);
+
+    // Set a new timeout
+    debounceTimer = setTimeout(() => {
+      if (tab.url.includes(strMatchUrl)) {
+        sendMatchRequest(tabId);
+      }
+    }, 1000);
+  }
+});
+
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   console.log('Received message:', message);
   if (message.action === "enhanceMatch") {

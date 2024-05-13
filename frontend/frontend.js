@@ -1,7 +1,6 @@
 
 console.log("ProjectV-Tracker is loaded.");
 
-// URLs
 const strProfileUrl = "https://projectv.gg/profile/";
 const strMatchUrl = "https://projectv.gg/matches/";
 const strTeamUrl = "https://projectv.gg/teams/";
@@ -13,32 +12,13 @@ const strRiotIdClassName = "statistic-section__name";
 const strOverviewClassName = "match-overview__member";
 const strGameAccountClassName = "match-overview__member-gameaccount";
 
-let blnEnhanceMatch = document.baseURI.includes(strMatchUrl);
-let blnEnhanceTeam = document.baseURI.includes(strTeamUrl);
-let blnEnhanceProfile = document.baseURI.includes(strProfileUrl);
 
-setTimeout(() => {
-    execRanks()
-}, 2.0 * 1000);
-
-function execRanks() {
-    // User wants to Enhance a Match
-    if (blnEnhanceMatch) {
-        enhanceMatch();
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+    console.log('Received message:', message);
+    if (message.action === "match") {
+      enhanceMatch();
     }
-    
-    // User wants to Enhance a Team
-    else if (blnEnhanceTeam) {
-        enhanceTeam();
-    }
-    
-    // User wants to Enhance a Profile
-    else if (blnEnhanceProfile) {
-        
-    }
-    
-    else { /** Case not specified yet. */}
-}
+});
 
 async function enhanceMatch() {
     console.log("enhancing Match");
@@ -49,17 +29,17 @@ async function enhanceMatch() {
     });
 }
 
-async function enhanceTeam() {
-    console("enhancing Team");
-    let strRiotID = getRiotID(document.querySelector("." + strRiotIdClassName).innerHTML);
-    let arrPlayerInfo = await getPlayerInfos([strRiotID]);
-    let objPlayerInfo = arrPlayerInfo[0];
+// async function enhanceTeam() {
+//     console("enhancing Team");
+//     let strRiotID = getRiotID(document.querySelector("." + strRiotIdClassName).innerHTML);
+//     let arrPlayerInfo = await getPlayerInfos([strRiotID]);
+//     let objPlayerInfo = arrPlayerInfo[0];
 
-    let htmlRankElement = createRankElement(objPlayerInfo, strRankClassName);
+//     let htmlRankElement = createRankElement(objPlayerInfo, strRankClassName);
 
-    // Replace Logo with Rank
-    document.querySelector("." + strRankClassName).replaceWith(htmlRankElement);
-}
+//     // Replace Logo with Rank
+//     document.querySelector("." + strRankClassName).replaceWith(htmlRankElement);
+// }
 
 function addRanksToMatchpage(dictPlayerInfos) {
     for (let player of dictPlayerInfos) {
