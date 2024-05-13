@@ -31,6 +31,7 @@ class RankFactory {
         htmlRankElement.height = this.strHeight;
         htmlRankElement.padding = this.strPaddingButtom;
         htmlRankElement.onClick = strOnclick;
+        htmlRankElement.style.zIndex = "1000";
         
         return htmlRankElement;
     }
