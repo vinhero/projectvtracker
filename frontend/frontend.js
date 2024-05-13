@@ -6,11 +6,16 @@ const strProfileUrl = "https://projectv.gg/profile/";
 const strMatchUrl = "https://projectv.gg/matches/";
 const strTeamUrl = "https://projectv.gg/teams/";
 
+// Class Names
+const strRankClassName = "statistic-section__logo";
+const strRiotIdClassName = "statistic-section__name";
+
+const strOverviewClassName = "match-overview__member";
+const strGameAccountClassName = "match-overview__member-gameaccount";
+
 let blnEnhanceMatch = document.baseURI.includes(strMatchUrl);
 let blnEnhanceTeam = document.baseURI.includes(strTeamUrl);
 let blnEnhanceProfile = document.baseURI.includes(strProfileUrl);
-
-let strTrackerSection = "overview";
 
 setTimeout(() => {
     execRanks()
@@ -46,8 +51,6 @@ async function enhanceMatch() {
 
 async function enhanceTeam() {
     console("enhancing Team");
-    const strRankClassName = "statistic-section__logo";
-    const strRiotIdClassName = "statistic-section__name";
     let strRiotID = getRiotID(document.querySelector("." + strRiotIdClassName).innerHTML);
     let arrPlayerInfo = await getPlayerInfos([strRiotID]);
     let objPlayerInfo = arrPlayerInfo[0];
@@ -63,22 +66,22 @@ function addRanksToMatchpage(dictPlayerInfos) {
         let rankFactory = new RankFactory();
         let htmlRankElement = rankFactory.createMatchElement(player);
 
-        for (let element = 0; element < document.getElementsByClassName("match-overview__member").length; element++){
+        for (let element = 0; element < document.getElementsByClassName(strOverviewClassName).length; element++){
             if (player.RiotID != "" 
             && 
             document
-            .getElementsByClassName("match-overview__member")[element]
-            .getElementsByClassName("match-overview__member-gameaccount")[0].innerText.includes(player.RiotID)) 
+            .getElementsByClassName(strOverviewClassName)[element]
+            .getElementsByClassName(strGameAccountClassName)[0].innerText.includes(player.RiotID)) 
             {
-                document.getElementsByClassName("match-overview__member")[element].appendChild(htmlRankElement);
+                document.getElementsByClassName(strOverviewClassName)[element].appendChild(htmlRankElement);
             }
             else if (player.RiotID == "" 
             && 
             document
-            .getElementsByClassName("match-overview__member")[element]
-            .getElementsByClassName("match-overview__member-gameaccount")[0].innerText == player.RiotID) 
+            .getElementsByClassName(strOverviewClassName)[element]
+            .getElementsByClassName(strGameAccountClassName)[0].innerText == player.RiotID) 
             {
-                document.getElementsByClassName("match-overview__member")[element].appendChild(htmlRankElement);
+                document.getElementsByClassName(strOverviewClassName)[element].appendChild(htmlRankElement);
             }
         }
     }
