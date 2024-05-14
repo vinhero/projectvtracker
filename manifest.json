@@ -7,9 +7,6 @@
     "service_worker": "backend/backend.js"
   },
   "permissions": ["storage", "activeTab", "scripting", "tabs", "webNavigation"],
-  "action": {
-    "default_popup": "popup/popup.html"
-  },
   "content_scripts": [
     {
       "js": [
