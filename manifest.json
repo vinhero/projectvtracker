@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,  
   "name": "ProjectV-Enhancer",
-  "version": "0.1",
+  "version": "0.7",
   "description": "It shows the ranks of all participating players in a Match.",
   "background": {
     "service_worker": "backend/backend.js"
@@ -17,16 +17,8 @@
       ],
       "matches": [
         "https://projectv.gg/matches/*",
-        "https://projectv.gg/teams/*",
-        "https://projectv.gg/profile/*",
         "https://api.projectv.gg/*"
       ]
     }
-  ],
-  "host_permissions": [
-    "https://projectv.gg/matches/*",
-    "https://projectv.gg/teams/*",
-    "https://projectv.gg/profile/*",
-    "https://api.projectv.gg/*"
   ]
 }

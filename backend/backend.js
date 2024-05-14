@@ -1,8 +1,4 @@
-// backend: Tab wird geupdated -> spieler in storage -> ändern wenn anders als unranked
-// frontend: wenn DOM sich ändern -> spieler von match id aus dem sotrage (backend anfrage) holen
-// storage: {matchID: {playerID: {rank: "rank", rankImg: "rankImg"}}}
-// o. storage: Entry: {playerID: {rank: "rank", rankImg: "rankImg"} matchIDs: ["matchID1", "matchID2"]}
-// classe globalSettings mit constanten machen
+
 
 const strApiUrl = "https://api.henrikdev.xyz/valorant/v1/mmr/eu/";
 const strTrackerUrl = "https://tracker.gg/valorant/profile/riot/";
@@ -80,7 +76,6 @@ async function getMatchParticipantsInStorage(strMatchID) {
     return [];
   }
 }
-
 
 async function updatePlayersInStorage(strMatchID, tab) {
   let arrRiotIDs = await fetchParticipants(strMatchID);
