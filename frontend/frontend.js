@@ -12,16 +12,21 @@ const strRiotIdClassName = "statistic-section__name";
 const strOverviewClassName = "match-overview__member";
 const strGameAccountClassName = "match-overview__member-gameaccount";
 
-
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     console.log('Received message:', message);
     if (message.action === "match") {
-      enhanceMatch();
+        document.querySelectorAll("." + "match-overview").forEach(element => {
+            element.onload = enhanceMatch();
+        });
     }
 });
 
 async function enhanceMatch() {
     console.log("enhancing Match");
+
+    document.querySelectorAll("." + "match-overview").forEach(element => {
+        element.onload = null;
+    });
 
     chrome.runtime.sendMessage({ action: "enhanceMatch", matchID: document.baseURI.replace(strMatchUrl, "") }, function(response) {
         console.log('Received final data:', response.finalData);
