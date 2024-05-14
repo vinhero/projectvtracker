@@ -46,18 +46,13 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     
     if (tab.url.includes(strMatchUrl)){
       clearTimeout(fetchDataTimer);
-      clearTimeout(dataRdyTimer);
-      
+
       let strMatchID = tab.url.replace(strMatchUrl, "");
-      updatePlayersInStorage(strMatchID)
-      .then(() => console.log("Players in Match " + strMatchID + " updated in storage"))
-      .catch((error) => console.log("Error while saving Match: " + strMatchID + " in storage.:" + error));
-    
-      dataRdyTimer = setTimeout(() => {
-        if (tab.url.includes(strMatchUrl)) {
-          sendMatchDataRdy(tabId);
-        }
-      }, 1000);
+      fetchDataTimer = setTimeout(() => {
+        updatePlayersInStorage(strMatchID, tab)
+        .then(() => console.log("Players in Match " + strMatchID + " updated in storage"))
+        .catch((error) => console.log("Error while saving Match: " + strMatchID + " in storage.:" + error));
+      }, 2000);
     }
   }
 });
@@ -87,7 +82,7 @@ async function getMatchParticipantsInStorage(strMatchID) {
 }
 
 
-async function updatePlayersInStorage(strMatchID) {
+async function updatePlayersInStorage(strMatchID, tab) {
   let arrRiotIDs = await fetchParticipants(strMatchID);
   let arrNeededPlayers = [];
 
@@ -118,6 +113,13 @@ async function updatePlayersInStorage(strMatchID) {
   chrome.storage.local.set({[strMatchID]: {players: arrRiotIDs}}, function() {
     console.log(strMatchID + " saved in storage");
   });
+
+  clearTimeout(dataRdyTimer);
+  dataRdyTimer = setTimeout(() => {
+    if (tab.url.includes(strMatchUrl)) {
+      sendMatchDataRdy(tab.id);
+    }
+  }, 1000);
 }
 
 async function getPlayerFromStorage(strPlayerID) {
