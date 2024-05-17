@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       sendResponse({ finalData: finalData });
 
     }).catch(error => {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data:', error.toString());
       sendResponse({ finalData: null, error: error.toString() });
     });
     return true;  // async response
@@ -47,7 +47,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
       fetchDataTimer = setTimeout(() => {
         updatePlayersInStorage(strMatchID, tab)
         .then(() => console.log("Players in Match " + strMatchID + " updated in storage"))
-        .catch((error) => console.log("Error while saving Match: " + strMatchID + " in storage.:" + error));
+        .catch((error) => console.log("Error while saving Match: " + strMatchID + " in storage.:" + error.toString()));
       }, 2000);
     }
   }
@@ -72,7 +72,7 @@ async function getMatchParticipantsInStorage(strMatchID) {
     const matchParticipants = await chrome.storage.local.get([strMatchID]);
     return matchParticipants[strMatchID].players;
   } catch (error) {
-    console.log("Error while fetching " + strMatchID + " from storage: " + error);
+    console.log("Match " + strMatchID + " not found in Storage: " + error);
     return [];
   }
 }
@@ -122,7 +122,7 @@ async function getPlayerFromStorage(strPlayerID) {
     const playerInfo = await chrome.storage.local.get([strPlayerID]);
     return playerInfo[strPlayerID].info;
   } catch (error) {
-    console.error("Error while fetching " + strPlayerID + " from storage: " + error);
+    console.error(strPlayerID + " not found in Storage: " + error.toString());
     return undefined;
   }
 }
@@ -134,7 +134,10 @@ async function fetchParticipants(strCurrentMatchId) {
   let arrPlayers = [];
   for (let lineup in matchData.encounters){
     for (let player in matchData.encounters[lineup].lineups){
+      if (arrPlayers.includes(matchData.encounters[lineup]?.lineups[player]?.user?.gameaccounts[0]?.value) == false){
         arrPlayers.push(matchData.encounters[lineup]?.lineups[player]?.user?.gameaccounts[0]?.value ?? "");
+      }
+      else {/** Player already exists. */}
     }
   }
 
@@ -172,7 +175,7 @@ async function getPlayerInfos(arrRiotIDs) {
       objPlayerInfo.RankImg = strUnrankedUrl;
       objPlayerInfo.RankName = "Unranked";
       objPlayerInfo.Error = true;
-      console.error("Error: " + error);
+      console.error("Error: " + error.toString());
       return objPlayerInfo;
     }));
   }
@@ -180,7 +183,7 @@ async function getPlayerInfos(arrRiotIDs) {
   // wait for all playerInfos to resolve
   await Promise.all(arrPromises)
   .then(promises => {Promise.all(promises.map(aPromise => arrPlayerInfos.push(aPromise)))})
-  .catch((error) => console.error("Error: " + error));
+  .catch((error) => console.error("Error: " + error.toString()));
 
   return arrPlayerInfos;
 }
