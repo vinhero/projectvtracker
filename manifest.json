@@ -1,12 +1,12 @@
 {
   "manifest_version": 3,  
   "name": "SkyeFlash",
-  "version": "0.71",
+  "version": "0.72",
   "description": "It shows the ranks of all participating players in a Match.",
   "background": {
     "service_worker": "backend/backend.js"
   },
-  "permissions": ["storage", "scripting", "tabs", "webNavigation"],
+  "permissions": ["storage", "tabs"],
   "content_scripts": [
     {
       "js": [
@@ -14,7 +14,8 @@
       ],
       "matches": [
         "https://projectv.gg/matches/*",
-        "https://api.projectv.gg/*"
+        "https://api.projectv.gg/*",
+        "https://api.henrikdev.xyz/*"
       ]
     }
   ]
