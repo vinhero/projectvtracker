@@ -1,6 +1,7 @@
 
 
-const strApiUrl = "https://api.henrikdev.xyz/valorant/v1/mmr/eu/";
+// const strApiUrl = "https://api.henrikdev.xyz/valorant/v1/mmr/eu/";
+const strApiUrl = "https://splendid-groovy-feverfew.glitch.me/valorant/region/username/tag";
 const strTrackerUrl = "https://tracker.gg/valorant/profile/riot/";
 const strUnrankedUrl = "https://trackercdn.com/cdn/tracker.gg/valorant/icons/tiers/0.png";
 const strProjectVApiUrl = "https://api.projectv.gg/api/v1/frontend/matches/";
@@ -148,7 +149,12 @@ function buildApiUrl(strPlayerID) {
   let arrPlayerTag = strPlayerID.split("#");
   let strPlayerName = arrPlayerTag[0];
   let strPlayerTag = arrPlayerTag[1];
-  return (strApiUrl + strPlayerName + '/' + strPlayerTag).replaceAll(' ', '%20');
+  let strPlayerApiUrl = strApiUrl;
+  strPlayerApiUrl = strPlayerApiUrl.replace("username", strPlayerName);
+  strPlayerApiUrl = strPlayerApiUrl.replace("tag", strPlayerTag);
+  strPlayerApiUrl = strPlayerApiUrl.replace("region", "eu");
+  strPlayerApiUrl = strPlayerApiUrl.replaceAll(' ', '%20');
+  return (strPlayerApiUrl);
 }
 
 async function getPlayerInfos(arrRiotIDs) {  
@@ -162,9 +168,10 @@ async function getPlayerInfos(arrRiotIDs) {
     let objPlayerInfo = new Object();
     objPlayerInfo.RiotID = strRiotID;
     objPlayerInfo.Error = false;
-    arrPromises.push(fetch(strApiUrl)
+    arrPromises.push(fetch(strApiUrl, {method: 'GET', mode: 'no-cors'})
     .then(response => response.json())
     .then(jsonData => {
+      console.log(jsonData);
       objPlayerInfo.RankImg = jsonData.data.images.large;
       objPlayerInfo.RankName = jsonData.data.currenttierpatched;
       return objPlayerInfo;
