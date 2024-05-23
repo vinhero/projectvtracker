@@ -15,7 +15,8 @@
       "matches": [
         "https://projectv.gg/matches/*",
         "https://api.projectv.gg/*",
-        "https://api.henrikdev.xyz/*"
+        "https://api.henrikdev.xyz/*",
+        "https://splendid-groovy-feverfew.glitch.me/valorant/*"
       ]
     }
   ]
